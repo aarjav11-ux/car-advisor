@@ -1,42 +1,89 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Car Buyer Questionnaire</title>
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f7f9fb;--fg:#1d2433;--muted:#6b7280;--line:#9ca3af;--card:#fff;--acc:#2563eb}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151c;--fg:#e5e7eb;--muted:#9ca3af;--line:#4b5563;--card:#1a2029;--acc:#60a5fa}}
-:root[data-theme="dark"]{--bg:#11151c;--fg:#e5e7eb;--muted:#9ca3af;--line:#4b5563;--card:#1a2029;--acc:#60a5fa}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:Raleway,system-ui,sans-serif;font-size:17px;line-height:1.5}
-main{max-width:760px;margin:0 auto;padding:24px 16px 80px}
-h1{font-weight:600;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 20px}
-.bar{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2;font-size:14px;color:var(--muted)}
-.bar div{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--acc);width:0}
-h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--acc);margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.q{margin:22px 0}.q>label.t{display:block;margin-bottom:8px}.q .n{color:var(--muted);font-size:14px;margin-right:6px}
-.req:after{content:" *";color:var(--fg)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:24px}@media(max-width:560px){.row{grid-template-columns:1fr}}
-input[type=number],input[type=text],input[type=email]{width:100%;padding:14px;font:inherit;border:1px solid var(--line);background:var(--card);color:var(--fg)}
-.opt{display:flex;align-items:center;gap:12px;padding:6px 0;cursor:pointer}
-.opt input{width:22px;height:22px;accent-color:var(--acc);flex:none}
-.chips{display:flex;flex-wrap:wrap;gap:8px}.chips label{border:1px solid var(--line);padding:6px 12px;border-radius:999px;cursor:pointer;background:var(--card);font-size:15px}
-.chips input{display:none}.chips input:checked+span{color:var(--acc);font-weight:600}.chips label:has(input:checked){border-color:var(--acc)}
-button{font:inherit;padding:12px 22px;border:0;border-radius:6px;background:var(--acc);color:#fff;cursor:pointer;margin-top:28px}
-#out{margin-top:28px;padding:20px;background:var(--card);border:1px solid var(--line);border-radius:8px;display:none}
-#out li{margin:4px 0}
-.w{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:8px;vertical-align:2px;border:1px solid var(--line);color:var(--muted)}
-.w5{border-color:#dc2626;color:#dc2626}.w4{border-color:#d97706;color:#d97706}.err{outline:2px solid #dc2626;outline-offset:6px}
+:root{--bg:#f4f6fa;--fg:#14213d;--muted:#5b6475;--line:#d6dbe4;--card:#ffffff;--acc:#2563eb;--acc-soft:#e8efff;--ok:#16794c;--warn:#b45309;--bad:#c2410c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141c;--fg:#e8ecf2;--muted:#9aa4b5;--line:#2c3544;--card:#171e29;--acc:#6ea0ff;--acc-soft:#1c2a45;--ok:#4ade80;--warn:#fbbf24;--bad:#fb923c}}
+:root[data-theme="dark"]{--bg:#0f141c;--fg:#e8ecf2;--muted:#9aa4b5;--line:#2c3544;--card:#171e29;--acc:#6ea0ff;--acc-soft:#1c2a45;--ok:#4ade80;--warn:#fbbf24;--bad:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:720px;margin:0 auto;padding:0 16px 120px}
+.hero{padding:40px 0 20px}
+.hero h1{font-size:30px;line-height:1.2;margin:0 0 8px;letter-spacing:-.01em}
+.hero p{color:var(--muted);margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.facts span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.bar .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:500}
+.bar .meta b{color:var(--fg)}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px}
+.track i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.dots{display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:2px}
+.dots button{flex:1 0 auto;min-width:22px;height:6px;padding:0;margin:0;border:0;border-radius:3px;background:var(--line);cursor:pointer}
+.dots button.done{background:var(--ok)}.dots button.cur{background:var(--acc)}
+.step{display:none}.step.on{display:block;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.step-head{margin:4px 0 18px}
+.step-head .k{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+.step-head h2{font-size:24px;margin:4px 0 2px;letter-spacing:-.01em}
+.step-head p{margin:0;color:var(--muted);font-size:14px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;margin:0 0 14px}
+.q>label.t{display:block;font-weight:600;font-size:16.5px;margin-bottom:12px}
+.q .n{color:var(--muted);font-weight:500;margin-right:6px}
+.req:after{content:" *";color:var(--bad)}
+.w{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:8px;vertical-align:2px;background:var(--bg);color:var(--muted);white-space:nowrap}
+.w5{background:#fdecec;color:#b42318}.w4{background:#fff4e5;color:#b45309}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .w5{background:#3a1c1c;color:#fca5a5}:root:not([data-theme="light"]) .w4{background:#3a2a12;color:#fcd34d}}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.row .q{margin-bottom:14px}
+@media(max-width:560px){.row{grid-template-columns:1fr;gap:0}.hero h1{font-size:25px}}
+input[type=number],input[type=text],input[type=email]{width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);outline:none;transition:border-color .15s}
+input[type=number]:focus,input[type=text]:focus,input[type=email]:focus{border-color:var(--acc);background:var(--card)}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--acc)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.opt:has(input:checked){border-color:var(--acc);background:var(--acc-soft)}
+.opt:has(input:checked) .dot{border-color:var(--acc)}
+.opt:has(input:checked) .dot:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.opt:has(input:focus-visible){outline:2px solid var(--acc);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{border:1.5px solid var(--line);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:15px;transition:all .15s;user-select:none}
+.chips label:hover{border-color:var(--acc)}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label:has(input:checked){border-color:var(--acc);background:var(--acc);color:#fff}
+.chips label:has(input:checked) span:before{content:"✓ "}
+.err{border-color:var(--bad)!important;box-shadow:0 0 0 3px rgba(194,65,12,.15)}
+.err-msg{color:var(--bad);font-size:13px;margin:-6px 0 12px;display:none}.err .err-msg{display:block}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.nav .in{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.nav .hint{flex:1;font-size:13px;color:var(--muted)}
+button{font:inherit;font-weight:600;padding:12px 22px;border:0;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border:1.5px solid var(--line)}
+button:disabled{opacity:.4;cursor:default}
+#go{display:none}
+#out{margin-top:20px;padding:22px;background:var(--card);border:1.5px solid var(--acc);border-radius:14px;display:none}
+#out h3{margin-top:0}#out li{margin:6px 0}
+#saved{font-size:15px;font-weight:500;color:var(--ok);margin:16px 0 0}
 </style></head><body><main>
-<h1>Find your right car</h1>
-<p class="sub">100 questions across 13 sections. Answer what you can; required ones are starred.</p>
-<div class="bar"><span id="pc">0 of 100 answered</span><div><i id="pb"></i></div></div>
-<div class="row" style="margin-bottom:8px"><div class="q"><label class="t req" for="cname">Your name</label><input type="text" id="cname" placeholder="e.g. Priya Sharma"></div>
-<div class="q"><label class="t req" for="cemail">Email</label><input type="email" id="cemail" placeholder="We’ll email your car report here"></div></div>
-<div class="row" style="margin-bottom:8px"><div class="q"><label class="t" for="cphone">Phone (optional)</label><input type="text" id="cphone" placeholder="e.g. 98xxxxxx10"></div><div></div></div>
+<header class="hero">
+<h1>Find the right car for you</h1>
+<p>Answer a few questions about your budget, driving and family. We’ll email you a personalised report with three recommended cars.</p>
+<div class="facts"><span>⏱ About 10–12 minutes</span><span>14 short steps</span><span>Progress saves automatically</span></div>
+</header>
+<div class="bar"><div class="meta"><span id="stepname"><b>Step 1</b></span><span id="pc">0 of 100 answered</span></div><div class="track"><i id="pb"></i></div><div class="dots" id="dots"></div></div>
+<section class="step on" id="s-contact">
+<div class="step-head"><div class="k">Before we start</div><h2>Where should we send your report?</h2><p>We only use these details to send your report.</p></div>
+<div class="q" id="qc-name"><label class="t req" for="cname">Your name</label><p class="err-msg">Please enter your name.</p><input type="text" id="cname" autocomplete="name" placeholder="e.g. Priya Sharma"></div>
+<div class="q" id="qc-email"><label class="t req" for="cemail">Email</label><p class="err-msg">Please enter a valid email address.</p><input type="email" id="cemail" autocomplete="email" placeholder="you@example.com"></div>
+<div class="q"><label class="t" for="cphone">Phone <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="tel" id="cphone" autocomplete="tel" placeholder="e.g. 98xxxxxx10" style="width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)"></div>
+</section>
 <form id="f"></form>
-<button id="go" type="button">Submit & get my recommendation</button>
-<p id="saved" style="color:var(--muted);font-size:15px"></p>
+<p id="saved"></p>
 <div id="out"></div>
 </main>
+<nav class="nav"><div class="in"><button type="button" class="ghost" id="back">Back</button><span class="hint" id="hint"></span><button type="button" id="next">Next</button><button id="go" type="button">Get my recommendation</button></div></nav>
 <script>
 // type: n=number, t=text, r=radio, m=multi-select. Options split by |
 const S=[
@@ -164,13 +211,13 @@ const W={P1:5,P2:4,P3:5,P4:4,P5:5,P6:5,P7:5,P8:5,P9:5,P10:4,P11:5,P12:3,P13:3,P1
 const SRC=['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','P14','P15',1,2,5,6,10,11,13,14,16,18,19,23,24,25,26,27,28,31,33,34,35,36,37,38,39,40,41,43,45,47,48,51,53,54,55,56,57,58,60,62,64,65,66,67,68,69,70,71,72,73,75,76,77,79,81,82,84,85,86,87,88,90,91,92,94,95,97,98,102,103,105,106,108,109,110,112,113,115,118,119,120,121,123,124,125];
 const WL=['','Minor','Low','Moderate','High','Decisive'],KW={};
 const f=document.getElementById('f');let N=0,html='';
-S.forEach(([title,qs])=>{html+=`<h2>${title}</h2>`;let pair=[];
+S.forEach(([title,qs],si)=>{html+=`<section class="step" data-title="${title}"><div class="step-head"><div class="k">Step ${si+2} of ${S.length+1}</div><h2>${title}</h2><p>${qs.length} questions</p></div>`;let pair=[];
  qs.forEach(q=>{N++;const [ty,t,o,req,key]=q;const id='q'+N,nm=key||id,rq=req?'req':'',wt=W[SRC[N-1]];KW[nm]=wt;let b='';
   if(ty=='n'||ty=='t')b=`<input type="${ty=='n'?'number':'text'}" name="${nm}" id="${id}" placeholder="${o}" ${ty=='n'?'min="0"':''}>`;
-  else if(ty=='r')b=o.split('|').map(x=>`<label class="opt"><input type="radio" name="${nm}" value="${x}"><span>${x}</span></label>`).join('');
+  else if(ty=='r')b='<div class="opts">'+o.split('|').map(x=>`<label class="opt"><input type="radio" name="${nm}" value="${x}"><span class="dot"></span><span>${x}</span></label>`).join('')+'</div>';
   else b='<div class="chips">'+o.split('|').map(x=>`<label><input type="checkbox" name="${nm}" value="${x}"><span>${x}</span></label>`).join('')+'</div>';
-  const blk=`<div class="q" data-n="${nm}" data-req="${req}" data-w="${wt}"><label class="t ${rq}" for="${id}"><span class="n">${N}.</span>${t}<span class="w w${wt}" title="Importance weight ${wt} of 5">${WL[wt]} · ${wt}</span></label>${b}</div>`;
-  if(ty=='n'&&(key=='mkm'||key=='ykm')){pair.push(blk);if(pair.length==2){html+=`<div class="row">${pair.join('')}</div>`;pair=[]}}else html+=blk;});});
+  const blk=`<div class="q" data-n="${nm}" data-req="${req}" data-w="${wt}"><label class="t ${rq}" for="${id}"><span class="n">${N}.</span>${t}<span class="w w${wt}" title="Importance weight ${wt} of 5">${WL[wt]}</span></label><p class="err-msg">Please answer this question.</p>${b}</div>`;
+  if(ty=='n'&&(key=='mkm'||key=='ykm')){pair.push(blk);if(pair.length==2){html+=`<div class="row">${pair.join('')}</div>`;pair=[]}}else html+=blk;});html+='</section>';});
 f.innerHTML=html;
 const blocks=[...f.querySelectorAll('.q')];
 function answered(b){const els=f.querySelectorAll(`[name="${b.dataset.n}"]`);return [...els].some(e=>(e.type=='radio'||e.type=='checkbox')?e.checked:e.value.trim()!=='')}
@@ -180,12 +227,37 @@ f.addEventListener('input',prog);
 f.mkm.addEventListener('input',()=>{if(f.mkm.value)f.ykm.value=f.mkm.value*12;prog()});
 f.ykm.addEventListener('input',()=>{if(f.ykm.value)f.mkm.value=Math.round(f.ykm.value/12)});
 try{const s=JSON.parse(localStorage.getItem('carq')||'{}');for(const[k,v]of Object.entries(s))[].concat(v).forEach(x=>{f.querySelectorAll(`[name="${k}"]`).forEach(e=>{if(e.type=='radio'||e.type=='checkbox'){if(e.value==x)e.checked=true}else e.value=x})});prog()}catch(e){}
+// ---- step-by-step navigation ----
+const steps=[document.getElementById('s-contact'),...f.querySelectorAll('.step')];let cur=0;
+const dots=document.getElementById('dots');
+steps.forEach((st,i)=>{const d=document.createElement('button');d.type='button';d.title=i?st.dataset.title:'Your details';d.onclick=()=>show(i);dots.appendChild(d)});
+const contactOk=()=>cname.value.trim()&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cemail.value.trim());
+function stepDone(i){if(i==0)return !!contactOk();return [...steps[i].querySelectorAll('.q')].every(b=>b.dataset.req!='1'||answered(b))}
+function show(i){cur=Math.max(0,Math.min(steps.length-1,i));steps.forEach((st,j)=>st.classList.toggle('on',j==cur));
+ [...dots.children].forEach((d,j)=>{d.className=j==cur?'cur':(stepDone(j)?'done':'')});
+ stepname.innerHTML=`<b>Step ${cur+1} of ${steps.length}</b> · ${cur?steps[cur].dataset.title:'Your details'}`;
+ back.disabled=cur==0;const last=cur==steps.length-1;next.style.display=last?'none':'inline-block';go.style.display=last?'inline-block':'none';
+ hint.textContent=last?'Last step!':'';if(show.ready)window.scrollTo({top:document.querySelector('.bar').offsetTop,behavior:'smooth'});
+ try{localStorage.setItem('carq-step',cur)}catch(e){}}
+function flag(i){let bad=[];if(i==0){qc_name.classList.toggle('err',!cname.value.trim());qc_email.classList.toggle('err',!contactOk()&&!!cname.value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cemail.value.trim()));bad=[...steps[0].querySelectorAll('.err')]}
+ else{steps[i].querySelectorAll('.q').forEach(b=>{const m=b.dataset.req=='1'&&!answered(b);b.classList.toggle('err',m);if(m)bad.push(b)})}
+ if(bad.length)bad[0].scrollIntoView({behavior:'smooth',block:'center'});return !bad.length}
+const qc_name=document.getElementById('qc-name'),qc_email=document.getElementById('qc-email');
+next.onclick=()=>{if(flag(cur))show(cur+1)};back.onclick=()=>show(cur-1);
+document.addEventListener('input',e=>{const q=e.target.closest('.q');if(q&&q.classList.contains('err'))q.classList.remove('err');
+ [...dots.children].forEach((d,j)=>{if(j!=cur)d.className=stepDone(j)?'done':''})});
+// auto-advance focus: after picking a radio, gently scroll to the next question
+f.addEventListener('change',e=>{if(e.target.type!='radio')return;const q=e.target.closest('.q');const nx=q&&q.nextElementSibling;if(nx&&nx.classList.contains('q')&&!answered(nx))setTimeout(()=>nx.scrollIntoView({behavior:'smooth',block:'center'}),150)});
+try{const c=JSON.parse(localStorage.getItem('carq-contact')||'{}');if(c.n)cname.value=c.n;if(c.e)cemail.value=c.e;if(c.p)cphone.value=c.p}catch(e){}
+const s_contact_save=()=>{try{localStorage.setItem('carq-contact',JSON.stringify({n:cname.value,e:cemail.value,p:cphone.value}))}catch(e){}};
+[cname,cemail,cphone].forEach(el=>el.addEventListener('input',s_contact_save));
+show(0);show.ready=true;
 function data(){const d={};new FormData(f).forEach((v,k)=>{if(v==='')return;d[k]=k in d?[].concat(d[k],v):v});return d}
 f.addEventListener('change',()=>{try{localStorage.setItem('carq',JSON.stringify(data()))}catch(e){}});
 
 go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
- if(!cname.value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cemail.value.trim())){alert('Please add your name and a valid email address at the top, so we can send your report.');cname.scrollIntoView({behavior:'smooth',block:'center'});return}
- if(miss.length){miss.forEach(b=>b.classList.add('err'));miss[0].scrollIntoView({behavior:'smooth',block:'center'});alert(miss.length+' required question(s) left — highlighted in red.');return}
+ if(!contactOk()){show(0);flag(0);return}
+ if(miss.length){const si=steps.findIndex(st=>st.contains(miss[0]));show(si);setTimeout(()=>flag(si),300);hint.textContent=miss.length+' required question(s) still to answer';return}
  const d=data(),has=(k,v)=>[].concat(d[k]||[]).some(x=>x.startsWith(v)),ok=k=>{const a=[].concat(d.fuel||[]);return a.includes(k)||a.includes('No preference')};
  const ykm=+d.ykm||+d.mkm*12||0,bud=+d.budget||0,why=[],warn=[];
  // Fuel
