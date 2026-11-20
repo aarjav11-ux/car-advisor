@@ -15,7 +15,7 @@ h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--acc)
 .q{margin:22px 0}.q>label.t{display:block;margin-bottom:8px}.q .n{color:var(--muted);font-size:14px;margin-right:6px}
 .req:after{content:" *";color:var(--fg)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:24px}@media(max-width:560px){.row{grid-template-columns:1fr}}
-input[type=number],input[type=text]{width:100%;padding:14px;font:inherit;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+input[type=number],input[type=text],input[type=email]{width:100%;padding:14px;font:inherit;border:1px solid var(--line);background:var(--card);color:var(--fg)}
 .opt{display:flex;align-items:center;gap:12px;padding:6px 0;cursor:pointer}
 .opt input{width:22px;height:22px;accent-color:var(--acc);flex:none}
 .chips{display:flex;flex-wrap:wrap;gap:8px}.chips label{border:1px solid var(--line);padding:6px 12px;border-radius:999px;cursor:pointer;background:var(--card);font-size:15px}
@@ -30,7 +30,8 @@ button{font:inherit;padding:12px 22px;border:0;border-radius:6px;background:var(
 <p class="sub">100 questions across 13 sections. Answer what you can; required ones are starred.</p>
 <div class="bar"><span id="pc">0 of 100 answered</span><div><i id="pb"></i></div></div>
 <div class="row" style="margin-bottom:8px"><div class="q"><label class="t req" for="cname">Your name</label><input type="text" id="cname" placeholder="e.g. Priya Sharma"></div>
-<div class="q"><label class="t req" for="ccontact">Phone or email</label><input type="text" id="ccontact" placeholder="So we can send your car report"></div></div>
+<div class="q"><label class="t req" for="cemail">Email</label><input type="email" id="cemail" placeholder="We’ll email your car report here"></div></div>
+<div class="row" style="margin-bottom:8px"><div class="q"><label class="t" for="cphone">Phone (optional)</label><input type="text" id="cphone" placeholder="e.g. 98xxxxxx10"></div><div></div></div>
 <form id="f"></form>
 <button id="go" type="button">Submit & get my recommendation</button>
 <p id="saved" style="color:var(--muted);font-size:15px"></p>
@@ -183,7 +184,7 @@ function data(){const d={};new FormData(f).forEach((v,k)=>{if(v==='')return;d[k]
 f.addEventListener('change',()=>{try{localStorage.setItem('carq',JSON.stringify(data()))}catch(e){}});
 
 go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
- if(!cname.value.trim()||!ccontact.value.trim()){alert('Please add your name and phone or email at the top.');cname.scrollIntoView({behavior:'smooth',block:'center'});return}
+ if(!cname.value.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cemail.value.trim())){alert('Please add your name and a valid email address at the top, so we can send your report.');cname.scrollIntoView({behavior:'smooth',block:'center'});return}
  if(miss.length){miss.forEach(b=>b.classList.add('err'));miss[0].scrollIntoView({behavior:'smooth',block:'center'});alert(miss.length+' required question(s) left — highlighted in red.');return}
  const d=data(),has=(k,v)=>[].concat(d[k]||[]).some(x=>x.startsWith(v)),ok=k=>{const a=[].concat(d.fuel||[]);return a.includes(k)||a.includes('No preference')};
  const ykm=+d.ykm||+d.mkm*12||0,bud=+d.budget||0,why=[],warn=[];
@@ -234,10 +235,10 @@ go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.f
  // Save the submission: every question with its weight and answer, plus the computed profile
  const answers=blocks.map((b,i)=>{const v=[].concat(d[b.dataset.n]??[]);return{n:i+1,q:b.querySelector('label.t').firstChild.nextSibling.textContent,w:+b.dataset.w,a:v.join(', ')}}).filter(r=>r.a);
  const profile={budget:bud,fuel:topFuel,fuelRunnerUp:fuel[1]?.[0]||'',gearbox:gb,body,confidence:conf,warnings:warn};
- saveSub({name:cname.value.trim(),contact:ccontact.value.trim(),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
+ saveSub({name:cname.value.trim(),contact:cemail.value.trim()+(cphone.value.trim()?' · '+cphone.value.trim():''),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwbeSbmeVe4pEoT01xV4fj435eS374Kl50cVfHLhxUF1OvALlA1PObi4CluVvIuklho/exec';
 async function saveSub(doc){saved.textContent='Submitting your answers…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(doc)});
-  saved.textContent="✓ Submitted. We'll send you a personalised report with three car recommendations."}
+  saved.textContent=`✓ Submitted. We'll email your personalised car report to ${cemail.value.trim()} shortly.`}
  catch(e){saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
 </script></body></html>
