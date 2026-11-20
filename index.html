@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Car Buyer Questionnaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f9fb;--fg:#1d2433;--muted:#6b7280;--line:#9ca3af;--card:#fff;--acc:#2563eb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151c;--fg:#e5e7eb;--muted:#9ca3af;--line:#4b5563;--card:#1a2029;--acc:#60a5fa}}
+:root[data-theme="dark"]{--bg:#11151c;--fg:#e5e7eb;--muted:#9ca3af;--line:#4b5563;--card:#1a2029;--acc:#60a5fa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:Raleway,system-ui,sans-serif;font-size:17px;line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:24px 16px 80px}
+h1{font-weight:600;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 20px}
+.bar{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2;font-size:14px;color:var(--muted)}
+.bar div{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--acc);width:0}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--acc);margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.q{margin:22px 0}.q>label.t{display:block;margin-bottom:8px}.q .n{color:var(--muted);font-size:14px;margin-right:6px}
+.req:after{content:" *";color:var(--fg)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:24px}@media(max-width:560px){.row{grid-template-columns:1fr}}
+input[type=number],input[type=text]{width:100%;padding:14px;font:inherit;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.opt{display:flex;align-items:center;gap:12px;padding:6px 0;cursor:pointer}
+.opt input{width:22px;height:22px;accent-color:var(--acc);flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chips label{border:1px solid var(--line);padding:6px 12px;border-radius:999px;cursor:pointer;background:var(--card);font-size:15px}
+.chips input{display:none}.chips input:checked+span{color:var(--acc);font-weight:600}.chips label:has(input:checked){border-color:var(--acc)}
+button{font:inherit;padding:12px 22px;border:0;border-radius:6px;background:var(--acc);color:#fff;cursor:pointer;margin-top:28px}
+#out{margin-top:28px;padding:20px;background:var(--card);border:1px solid var(--line);border-radius:8px;display:none}
+#out li{margin:4px 0}
+.w{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:8px;vertical-align:2px;border:1px solid var(--line);color:var(--muted)}
+.w5{border-color:#dc2626;color:#dc2626}.w4{border-color:#d97706;color:#d97706}.err{outline:2px solid #dc2626;outline-offset:6px}
+</style></head><body><main>
+<h1>Find your right car</h1>
+<p class="sub">100 questions across 13 sections. Answer what you can; required ones are starred.</p>
+<div class="bar"><span id="pc">0 of 100 answered</span><div><i id="pb"></i></div></div>
+<div class="row" style="margin-bottom:8px"><div class="q"><label class="t req" for="cname">Your name</label><input type="text" id="cname" placeholder="e.g. Priya Sharma"></div>
+<div class="q"><label class="t req" for="ccontact">Phone or email</label><input type="text" id="ccontact" placeholder="So we can send your car report"></div></div>
+<form id="f"></form>
+<button id="go" type="button">Submit & get my recommendation</button>
+<p id="saved" style="color:var(--muted);font-size:15px"></p>
+<div id="out"></div>
+</main>
+<script>
+// type: n=number, t=text, r=radio, m=multi-select. Options split by |
+const S=[
+["Your profile & must-haves",[
+["n","Total on-road budget (₹ Lakhs)","e.g. 12",1,"budget"],
+["n","Maximum monthly EMI you're comfortable with (₹)","e.g. 18000",0,"emi"],
+["n","Average Monthly Kilometres","e.g. 1200",1,"mkm"],
+["n","Average Yearly Kilometres","e.g. 15000",1,"ykm"],
+["m","Where do you usually drive? (Select all that apply)","City|Highway / Expressway|Hills & ghats|Rural / unpaved roads",1,"where"],
+["r","Do you regularly drive in heavy, bumper-to-bumper traffic?","Yes|No",1,"traffic"],
+["r","If buying an EV, do you have a dedicated private home charging spot?","Yes|No",0,"charge"],
+["t","Which city do you live in?","e.g. Pune",1,"city"],
+["r","How many people usually travel in the car?","1–2|3–4|5|6–7",1,"occ"],
+["m","Which body types are you open to?","Hatchback|Sedan|Compact SUV (sub-4m)|Mid-size SUV|MPV / 7-seater",1,"body"],
+["m","Which fuel types are you open to?","Petrol|Diesel|CNG|Strong hybrid|Electric|No preference",1,"fuel"],
+["m","Preferred brands (optional)","Maruti Suzuki|Hyundai|Tata|Mahindra|Kia|Toyota|Honda|Skoda / VW|MG|No preference",0,"brand"],
+["m","Must-have features","6 airbags|ADAS|360° camera|Sunroof|Ventilated seats|Wireless CarPlay / Android Auto|Cruise control|Automatic climate control",0,"feat"],
+["r","Minimum crash-safety rating you'd accept","5-star only|4-star or better|Not a deciding factor",1,"ncap"],
+["n","How many years do you plan to keep this car?","e.g. 7",1,"years"]]],
+["True budget & liquidity",[
+["r","What exact liquid cash are you putting down right now from your savings?","Under ₹1 Lakh|₹1–3 Lakhs|₹3–5 Lakhs|₹5–10 Lakhs|Full cash (no loan)",1],
+["r","After paying for this car, will you still have an emergency cash cushion left?","Yes, more than the car's value|Yes, 6–12 months of expenses|No, my account will be almost empty",1,"cushion"],
+["r","If your budget is under ₹10 Lakhs, are you aware fuel and interest might cost more than the car?","Yes, I've factored in running costs|No, I only looked at the sticker price",0],
+["r","Have you calculated your total monthly car expense (EMI + fuel + insurance + service)?","Yes, fully budgeted|No, only the EMI",1],
+["r","What is your family's monthly household income?","Below ₹50,000|₹50,000–1,00,000|Above ₹1,00,000|Above ₹3,00,000",1],
+["r","Is this car an upgrade from a two-wheeler?","Yes, first four-wheeler in the family|No, replacing or adding a car",1]]],
+["Loans & income",[
+["r","What is the nature of your primary household income?","Fixed monthly salary|Variable freelance / business income|Pension / rental income",1],
+["r","What loan repayment tenure are you considering?","1–3 years|4–5 years|7 years|No loan",1],
+["r","What share of the on-road price are you financing?","Zero (full cash)|Under 40%|50–70%|85–100%",1],
+["r","If your income stopped, how many months of car payments could you cover?","Zero|1–3 months|6–12 months|Over 2 years",1],
+["r","Does your planned EMI exceed 15–20% of your take-home pay?","Well under 10%|10–20%|Above 25–30%",1,"emiShare"]]],
+["Driving pattern",[
+["r","What is your realistic monthly driving distance?","Under 300 km|300–800 km|1,000–1,500 km|2,000–3,000+ km",1,"band"],
+["r","What is your City vs Highway ratio?","90% city / 10% highway|50 / 50|10% city / 90% highway",1,"ratio"],
+["r","Do you take regular weekend highway trips of 150+ km?","Frequent long road trips|Only short local trips",1],
+["r","Do you regularly drive steep mountain passes or ghats?","Frequently|Once a year or so|Never",1,"hills"],
+["r","What kind of roads do you mostly drive on?","Smooth expressways|Broken city roads & potholes|Unpaved rural tracks",1,"roads"],
+["r","Will this be your only car or a second car?","Only household car|Second car for local errands|Third / luxury car",1,"role"],
+["r","Do you use the car for work — client visits, field duty or commercial use?","Personal / family|Professional field rounds|Commercial taxi",1]]],
+["Engine & performance",[
+["r","Are you considering a 3-cylinder or a 4-cylinder engine?","Strictly 4-cylinder|Open to 3-cylinder|Don't know the difference",0],
+["r","Do you prefer a simple naturally aspirated engine or a turbo-petrol?","Simple naturally aspirated|Punchy turbo-petrol",1,"turbo"],
+["r","Are you OK with turbo-petrol city mileage dropping to 6–8 km/l?","Yes, I accept it for power|No, I expect double-digit city mileage",1],
+["r","Do you want easy low-end pull or an engine you rev hard?","Strong low-end pull|High-revving engine",0],
+["r","Are you choosing an underpowered engine just to get a lower price?","Yes, budget is top priority|No, adequate power is essential",0],
+["r","Will you buy 95-octane premium fuel for a modern turbo engine?","Yes, happy to pay extra|No, only regular petrol",0],
+["r","How important is strong performance with the AC running?","Must stay strong with AC on|Can tolerate some sluggishness",0],
+["r","Are you considering a 7-seater with a small petrol engine?","Yes|No, diesel or smaller car",0],
+["r","Does turbo lag (delay before boost) frustrate you?","Yes, I hate hesitation|No, I don't mind",0],
+["r","Does your daily commute involve stop-and-go driving under 25 km/h?","Yes, dense city crawling|No, free-flowing roads",1,"crawl"]]],
+["Ethanol fuel (E20 / E27)",[
+["r","Are you aware of the impact of E20/E27 ethanol-blended petrol on engines?","Yes, fully informed|No, I didn't know",0],
+["r","Are you buying a direct-injection turbo-petrol for a car that will rarely run?","Yes|No, choosing a naturally aspirated engine",0],
+["r","Can you take the car on a 10–15 km run every few days?","Yes, regular runs|No, it will sit parked for weeks",1,"idle"],
+["r","Do you plan to keep this petrol car for the full 15-year registration?","Yes, full 15 years|No, exiting in 3–7 years",0]]],
+["Diesel realities",[
+["r","Do you live in or regularly travel to Delhi-NCR?","Resident of Delhi-NCR|Frequently visit|Outside NCR",1,"ncr"],
+["r","If in NCR, will you drive 1.5–2 lakh km in 10 years to justify a diesel?","Yes|No, only 30,000–50,000 km|Not in NCR",0],
+["r","Does your weekly routine include a 30–45 min continuous highway run?","Yes, every week|No, short city hops only",1,"hwyrun"],
+["r","Do you know what to do if a DPF warning light comes on?","Yes|No, I'd panic",0],
+["r","Do you understand that BS6 diesels need periodic AdBlue (DEF) refills?","Yes|No, never heard of it",0],
+["r","Do you prioritise strong pulling power for highway overtakes and hills?","Yes|No, gentle city commuting is fine",1,"torque"],
+["r","How do you feel about the sound of a diesel engine?","Enjoy it|Dislike it, prefer silent petrol / EV",0,"dnoise"],
+["r","Do you carry heavy loads, tow, or travel with five adults often?","Frequently fully loaded|Mostly 1–2 people",1,"load"]]],
+["CNG & electric",[
+["r","Does your daily driving consistently exceed 80–120 km?","Yes, 100+ km daily|No, under 30 km a day",1],
+["r","Are you willing to wait in queues at CNG pumps?","Yes, to save money|No, my time is too valuable",1,"cngq"],
+["r","Factory-fitted CNG or an aftermarket kit?","Factory-fitted|Aftermarket kit|Not considering CNG",0],
+["r","How much boot space can you give up for a CNG cylinder?","Can give up the boot|Need dual-cylinder under-floor layout|Need full boot",0,"boot"],
+["r","Are you aware real-world EV range drops on highways and in heat?","Yes|No, I expected brochure range",0],
+["r","If considering an EV, why?","Mainly to save on fuel|For the smooth, quiet drive|Not considering an EV",0],
+["r","Do you expect brisk overtaking power from a CNG car?","Yes|No, gentle cruising is fine",0],
+["r","Do you take spontaneous 800 km trips through remote regions?","Frequently|Only predictable routes",1,"remote"],
+["r","If choosing CNG, will you also run on petrol ~20% of the time?","Yes|No, 100% CNG|Not considering CNG",0]]],
+["Gearbox",[
+["r","Do you prefer a manual or an automatic?","Manual|Automatic|Either",1,"gear"],
+["r","Can you tolerate the jerky 'head-nod' shifts of low-cost AMT gearboxes?","Yes, fine for gentle driving|No, I want smooth shifts",1,"amt"],
+["r","Does the 'rubber-band' feel of a CVT bother you?","Bothers me|Doesn't bother me",0,"cvt"],
+["r","Would you choose a dry-clutch DCT for a commute stuck in crawling traffic?","Yes, mostly stop-and-go|No, mostly open roads",0],
+["r","Do you prioritise quick gear-shift response for sporty driving?","Yes|No, gentle shifts are plenty",0,"sporty"],
+["r","How light does the clutch pedal need to be?","Feather-light|A firmer clutch is fine|Automatic, so no clutch",0],
+["r","Do you want paddle shifters?","Essential|Nice to have|Unnecessary",0],
+["r","Would you consider an iMT (clutchless manual)?","Yes|Prefer traditional manual|Prefer full automatic",0]]],
+["Ride & handling",[
+["r","Do you prefer soft, plush suspension or firm and sporty?","Soft and plush|Firm and planted",1,"ride"],
+["r","Do regular passengers suffer from motion sickness?","Yes|No",1,"sick"],
+["r","How important is high-speed stability at 120 km/h?","Critical|Moderate, I rarely exceed 80",1,"hspeed"],
+["r","Light steering for parking or weighted steering for highways?","Ultra-light|Weighted and communicative",0],
+["r","Do you expect a tall SUV to corner like a sedan?","Yes|No, I understand SUV body roll",0],
+["r","Do you require disc brakes on all four wheels?","Must have|Front disc / rear drum is fine",0],
+["r","Minimum ground clearance you need for your routes?","165–170 mm (sedan)|180–190 mm (crossover)|200+ mm (rugged SUV)",1,"gc"],
+["r","How tight a turning circle do you need?","Very tight (under 5.0 m)|Standard (5.2–5.4 m) is fine",0,"turn"]]],
+["Cabin & family",[
+["r","Do elderly parents ride in the car often?","Yes, regularly|Mostly younger adults / children|Solo commuter",1,"elderly"],
+["r","Do you regularly seat three adults in the back?","Yes, regularly|Rarely",1,"rear3"],
+["r","Is any main driver taller than 6 ft or shorter than 5 ft 2 in?","Yes|No, average height",0],
+["r","Do you need to see the bonnet edges from the driver's seat for parking?","Yes|Not important",0],
+["r","Do you need ISOFIX child-seat mounts?","Mandatory|Not needed now",1]]],
+["Heat & climate",[
+["r","Do summer temperatures where you live regularly cross 40–45°C?","Yes, intense summers|Moderate climate",1,"hot"],
+["r","Do you want a panoramic sunroof?","Yes, really want one|Prefer a solid insulated roof",0],
+["r","Are rear AC vents mandatory?","Essential|Nice to have|Front vents are enough",1],
+["r","Are you choosing a dark paint colour in a sunny area?","Yes, I like black|No, white or silver",0],
+["r","Do you want ventilated front seats?","Highly desirable|Unnecessary luxury",0],
+["r","Do you want factory solar-reflective glass?","Yes|Standard glass is fine",0]]],
+["Dealer, service & resale",[
+["r","Will you do an independent pre-delivery inspection (PDI)?","Yes|No, I'll trust the dealer",0],
+["r","Will you shop for insurance outside the dealer?","Yes, independently online|Buying the dealer package",0],
+["r","How far is the nearest authorised service centre for brands you like?","Within 5–10 km|20–50 km|Over 100 km",1,"svc"],
+["r","How fast do you need warranty claims and parts?","24–48 hour turnaround|Can wait a week",0],
+["r","How much does 3–5 year resale value matter?","High priority|Not concerned",1,"resale"],
+["r","Will you buy the longest extended warranty available (5–7 years)?","Yes|No, standard warranty",0],
+["r","Do you want an engine any local garage can fix after warranty?","Yes, simple engine|Fine with specialised tools",0,"simple"],
+["r","Are you considering a slow-selling niche model?","No, a popular top-10 seller|Yes, a niche enthusiast model",0],
+["r","Have you test-driven the car you're considering with family?","Yes, personally test-driven|No, booking on online reviews",0]]]];
+
+// Importance weights (1 = minor, 5 = decisive) assigned by the Car Consultancy notebook.
+// Keys: P1–P15 = profile questions, numbers = the notebook's original question numbers.
+const W={P1:5,P2:4,P3:5,P4:4,P5:5,P6:5,P7:5,P8:5,P9:5,P10:4,P11:5,P12:3,P13:3,P14:5,P15:4,
+1:5,2:4,5:4,6:4,10:4,11:3,13:5,14:4,16:4,18:3,19:4,23:5,24:5,25:4,26:5,27:5,28:4,31:3,33:4,34:5,35:4,36:4,37:4,38:3,39:3,40:4,41:4,43:5,
+45:5,47:4,48:3,51:4,53:5,54:4,55:5,56:4,57:3,58:4,60:3,62:4,64:5,65:4,66:4,67:4,68:4,69:4,70:3,71:4,72:3,73:5,75:4,76:3,77:5,79:4,81:4,82:2,84:3,
+85:5,86:5,87:5,88:4,90:4,91:4,92:5,94:4,95:5,97:5,98:4,102:4,103:4,105:5,106:4,108:4,109:2,110:3,112:2,113:5,115:3,118:4,119:4,120:4,121:4,123:3,124:4,125:5};
+// Notebook source ID for each form question, in form order
+const SRC=['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','P14','P15',1,2,5,6,10,11,13,14,16,18,19,23,24,25,26,27,28,31,33,34,35,36,37,38,39,40,41,43,45,47,48,51,53,54,55,56,57,58,60,62,64,65,66,67,68,69,70,71,72,73,75,76,77,79,81,82,84,85,86,87,88,90,91,92,94,95,97,98,102,103,105,106,108,109,110,112,113,115,118,119,120,121,123,124,125];
+const WL=['','Minor','Low','Moderate','High','Decisive'],KW={};
+const f=document.getElementById('f');let N=0,html='';
+S.forEach(([title,qs])=>{html+=`<h2>${title}</h2>`;let pair=[];
+ qs.forEach(q=>{N++;const [ty,t,o,req,key]=q;const id='q'+N,nm=key||id,rq=req?'req':'',wt=W[SRC[N-1]];KW[nm]=wt;let b='';
+  if(ty=='n'||ty=='t')b=`<input type="${ty=='n'?'number':'text'}" name="${nm}" id="${id}" placeholder="${o}" ${ty=='n'?'min="0"':''}>`;
+  else if(ty=='r')b=o.split('|').map(x=>`<label class="opt"><input type="radio" name="${nm}" value="${x}"><span>${x}</span></label>`).join('');
+  else b='<div class="chips">'+o.split('|').map(x=>`<label><input type="checkbox" name="${nm}" value="${x}"><span>${x}</span></label>`).join('')+'</div>';
+  const blk=`<div class="q" data-n="${nm}" data-req="${req}" data-w="${wt}"><label class="t ${rq}" for="${id}"><span class="n">${N}.</span>${t}<span class="w w${wt}" title="Importance weight ${wt} of 5">${WL[wt]} · ${wt}</span></label>${b}</div>`;
+  if(ty=='n'&&(key=='mkm'||key=='ykm')){pair.push(blk);if(pair.length==2){html+=`<div class="row">${pair.join('')}</div>`;pair=[]}}else html+=blk;});});
+f.innerHTML=html;
+const blocks=[...f.querySelectorAll('.q')];
+function answered(b){const els=f.querySelectorAll(`[name="${b.dataset.n}"]`);return [...els].some(e=>(e.type=='radio'||e.type=='checkbox')?e.checked:e.value.trim()!=='')}
+function prog(){const a=blocks.filter(answered).length;pc.textContent=`${a} of ${N} answered`;pb.style.width=a/N*100+'%'}
+f.addEventListener('input',prog);
+// keep yearly/monthly km in sync
+f.mkm.addEventListener('input',()=>{if(f.mkm.value)f.ykm.value=f.mkm.value*12;prog()});
+f.ykm.addEventListener('input',()=>{if(f.ykm.value)f.mkm.value=Math.round(f.ykm.value/12)});
+try{const s=JSON.parse(localStorage.getItem('carq')||'{}');for(const[k,v]of Object.entries(s))[].concat(v).forEach(x=>{f.querySelectorAll(`[name="${k}"]`).forEach(e=>{if(e.type=='radio'||e.type=='checkbox'){if(e.value==x)e.checked=true}else e.value=x})});prog()}catch(e){}
+function data(){const d={};new FormData(f).forEach((v,k)=>{if(v==='')return;d[k]=k in d?[].concat(d[k],v):v});return d}
+f.addEventListener('change',()=>{try{localStorage.setItem('carq',JSON.stringify(data()))}catch(e){}});
+
+go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
+ if(!cname.value.trim()||!ccontact.value.trim()){alert('Please add your name and phone or email at the top.');cname.scrollIntoView({behavior:'smooth',block:'center'});return}
+ if(miss.length){miss.forEach(b=>b.classList.add('err'));miss[0].scrollIntoView({behavior:'smooth',block:'center'});alert(miss.length+' required question(s) left — highlighted in red.');return}
+ const d=data(),has=(k,v)=>[].concat(d[k]||[]).some(x=>x.startsWith(v)),ok=k=>{const a=[].concat(d.fuel||[]);return a.includes(k)||a.includes('No preference')};
+ const ykm=+d.ykm||+d.mkm*12||0,bud=+d.budget||0,why=[],warn=[];
+ // Fuel
+ // Each answer's effect is scaled by its notebook weight (weight 3 = ×1, weight 5 = ×1.67)
+ const fs={Petrol:2,Diesel:0,CNG:0,'Strong hybrid':0,Electric:0},x=k=>(KW[k]||3)/3;
+ if(ykm>=20000){fs.Diesel+=2*x('ykm');fs.CNG+=2*x('ykm');fs['Strong hybrid']+=x('ykm')}
+ if(has('hwyrun','Yes'))fs.Diesel+=x('hwyrun');else fs.Diesel-=2*x('hwyrun');
+ if(has('ratio','10%'))fs.Diesel+=2*x('ratio');if(has('ratio','90%')){fs.Diesel-=x('ratio');fs['Strong hybrid']+=2*x('ratio');fs.Electric+=x('ratio')}
+ if(has('ncr','Resident'))fs.Diesel-=3*x('ncr');
+ if(has('torque','Yes'))fs.Diesel+=x('torque');if(has('load','Frequently'))fs.Diesel+=x('load');if(has('hills','Freq'))fs.Diesel+=x('hills');
+ if(has('dnoise','Dislike'))fs.Diesel-=x('dnoise');
+ if(has('charge','Yes'))fs.Electric+=3*x('charge');else fs.Electric-=4*x('charge');
+ if(has('remote','Freq'))fs.Electric-=2*x('remote');
+ if(has('cngq','Yes'))fs.CNG+=x('cngq');else fs.CNG-=2*x('cngq');if(has('boot','Need full'))fs.CNG-=x('boot');
+ if(bud<18)fs['Strong hybrid']-=3;if(bud<10)fs.Electric-=1;
+ if(has('idle','No'))warn.push('The car will sit unused for long spells. Avoid direct-injection turbo-petrols and diesels (ethanol absorbs moisture, and the DPF clogs). A simple naturally aspirated petrol is the safest choice.');
+ const fuel=Object.entries(fs).filter(([k])=>ok(k)).sort((a,b)=>b[1]-a[1]);
+ const topFuel=fuel.length?fuel[0][0]:'Petrol';
+ why.push(`${ykm.toLocaleString('en-IN')} km a year, ${d.ratio||'—'}${has('charge','Yes')?', home charging available':''}.`);
+ // Gearbox
+ let gb='Manual';if(has('gear','Auto')||has('traffic','Yes')||has('crawl','Yes')){gb=has('amt','No')||has('cvt','Doesn')?'Automatic: torque converter or CVT (avoid AMT jerks and dry-clutch DCTs in crawling traffic)':'Automatic: AMT is fine for budget and gentle driving';if(topFuel=='Electric')gb='Automatic (single-speed EV)';if(has('sporty','Yes')&&!has('crawl','Yes'))gb='Automatic: DCT, for quick shifts on flowing roads'}
+ // Body
+ const occ=d.occ||'',bodies=[].concat(d.body||[]);let body;
+ if(occ=='6–7')body='MPV / 7-seater';else if(has('gc','200')||has('roads','Unpaved'))body='Mid-size SUV with 200 mm+ ground clearance';
+ else if(has('sick','Yes')||has('elderly','Yes')||has('ride','Soft'))body=bud>=11?'Sedan or soft-riding mid-size SUV (low body roll, easy entry for elders)':'Tall-boy hatchback or compact sedan with a plush ride';
+ else if(has('turn','Very')&&has('role','Second'))body='Hatchback (tight turning circle, easy to park)';
+ else body=bud<8?'Hatchback':bud<13?'Compact SUV (sub-4m) or sedan':'Mid-size SUV';
+ if(bodies.length&&!bodies.some(b=>body.includes(b.split(' ')[0])))warn.push(`You picked ${bodies.join(', ')}. Based on your usage we'd suggest: ${body}.`);
+ // Money checks
+ if(has('cushion','No'))warn.push("You'd be left with no emergency cash. Lower the budget or put more cash down before you buy.");
+ if(has('emiShare','Above'))warn.push('Your EMI is over 25% of take-home pay. Aim for 15–20% or less.');
+ if(has('ncr','Resident')&&ok('Diesel'))warn.push('Delhi-NCR limits diesel cars to 10 years, so a diesel only pays off at very high mileage.');
+ if(has('hot','Yes'))warn.push('In 40°C+ summers, rear AC vents and solar-cut glass matter more than a panoramic sunroof.');
+ const pr=[];if(has('resale','High')||has('svc','Over'))pr.push('mass-market brands with wide service networks (Maruti, Hyundai, Toyota, Tata, Mahindra)');if(has('ncap','5'))pr.push('5-star Bharat/Global NCAP-rated models');if(has('simple','Yes'))pr.push('proven, simple engines any local garage can service');
+ const tw=blocks.reduce((s,b)=>s+ +b.dataset.w,0),aw=blocks.filter(answered).reduce((s,b)=>s+ +b.dataset.w,0),conf=Math.round(aw/tw*100),
+  open5=blocks.filter(b=>b.dataset.w=='5'&&!answered(b)).length;
+ out.style.display='block';out.innerHTML=`<h3 style="margin-top:0">Your recommended car profile</h3>
+ <p><b>Confidence: ${conf}%</b> <span style="color:var(--muted)">(share of total question weight you answered${open5?`; ${open5} decisive question${open5>1?'s':''} still blank`:''})</span></p><ul>
+ <li><b>Budget:</b> ₹${bud} Lakhs on-road${d.emi?`, EMI cap ₹${(+d.emi).toLocaleString('en-IN')}`:''}</li>
+ <li><b>Fuel / powertrain:</b> ${topFuel}${fuel[1]?` (runner-up: ${fuel[1][0]})`:''}</li>
+ <li><b>Gearbox:</b> ${gb}</li><li><b>Body type:</b> ${body}</li>
+ ${pr.length?`<li><b>Shortlist from:</b> ${pr.join('; ')}</li>`:''}
+ ${d.feat?`<li><b>Must-haves:</b> ${[].concat(d.feat).join(', ')}</li>`:''}</ul>
+ <p style="color:var(--muted);font-size:14px">Based on: ${why.join(' ')}</p>
+ ${warn.length?`<h4>Things to watch</h4><ul>${warn.map(w=>`<li>${w}</li>`).join('')}</ul>`:''}`;
+ out.scrollIntoView({behavior:'smooth'});
+ // Save the submission: every question with its weight and answer, plus the computed profile
+ const answers=blocks.map((b,i)=>{const v=[].concat(d[b.dataset.n]??[]);return{n:i+1,q:b.querySelector('label.t').firstChild.nextSibling.textContent,w:+b.dataset.w,a:v.join(', ')}}).filter(r=>r.a);
+ const profile={budget:bud,fuel:topFuel,fuelRunnerUp:fuel[1]?.[0]||'',gearbox:gb,body,confidence:conf,warnings:warn};
+ saveSub({name:cname.value.trim(),contact:ccontact.value.trim(),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwbeSbmeVe4pEoT01xV4fj435eS374Kl50cVfHLhxUF1OvALlA1PObi4CluVvIuklho/exec';
+async function saveSub(doc){saved.textContent='Submitting your answers…';
+ try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(doc)});
+  saved.textContent="✓ Submitted. We'll send you a personalised report with three car recommendations."}
+ catch(e){saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
+</script></body></html>
