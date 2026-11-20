@@ -66,11 +66,21 @@ button:disabled{opacity:.4;cursor:default}
 #out{margin-top:20px;padding:22px;background:var(--card);border:1.5px solid var(--acc);border-radius:14px;display:none}
 #out h3{margin-top:0}#out li{margin:6px 0}
 #saved{font-size:15px;font-weight:500;color:var(--ok);margin:16px 0 0}
+.sample{display:flex;align-items:center;gap:14px;margin-top:18px;padding:14px 16px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;color:var(--fg);text-decoration:none;transition:border-color .15s}
+.sample:hover{border-color:var(--acc)}
+.sample-ic{flex:none;width:44px;height:52px;border-radius:6px;background:var(--acc-soft);color:var(--acc);font-size:12px;font-weight:700;display:grid;place-items:center}
+.sample-tx{flex:1;display:flex;flex-direction:column;gap:2px}.sample-tx span{font-size:13px;color:var(--muted);line-height:1.45}
+.sample-go{flex:none;font-weight:600;color:var(--acc);font-size:14px}
+@media(max-width:560px){.sample-go{display:none}}
 </style></head><body><main>
 <header class="hero">
 <h1>Find the right car for you</h1>
 <p>Answer a few questions about your budget, driving and family. We’ll email you a personalised report with three recommended cars.</p>
 <div class="facts"><span>⏱ About 10–12 minutes</span><span>14 short steps</span><span>Progress saves automatically</span></div>
+<a class="sample" href="sample-report.pdf" target="_blank" rel="noopener">
+<span class="sample-ic">PDF</span>
+<span class="sample-tx"><b>See a sample report</b><span>What you’ll receive: a ~40-page personalised report with your top 3 cars, a one-page summary, side-by-side comparison, monthly costs, test-drive checklist and why other cars were ruled out.</span></span>
+<span class="sample-go">View →</span></a>
 </header>
 <div class="bar"><div class="meta"><span id="stepname"><b>Step 1</b></span><span id="pc">0 of 100 answered</span></div><div class="track"><i id="pb"></i></div><div class="dots" id="dots"></div></div>
 <section class="step on" id="s-contact">
