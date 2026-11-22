@@ -311,7 +311,7 @@ show(0);show.ready=true;
 function data(){const d={};new FormData(f).forEach((v,k)=>{if(v==='')return;d[k]=k in d?[].concat(d[k],v):v});return d}
 f.addEventListener('change',()=>{try{localStorage.setItem('carq',JSON.stringify(data()))}catch(e){}});
 
-go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
+go.onclick=()=>{if(go.disabled)return;blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.filter(b=>b.dataset.req=='1'&&!answered(b));
  if(!contactOk()){show(0);flag(0);return}
  if(miss.length){const si=steps.findIndex(st=>st.contains(miss[0]));show(si);setTimeout(()=>flag(si),300);hint.textContent=miss.length+' required question(s) still to answer';return}
  const d=data(),has=(k,v)=>[].concat(d[k]||[]).some(x=>x.startsWith(v)),ok=k=>{const a=[].concat(d.fuel||[]);return a.includes(k)||a.includes('No preference')};
@@ -365,10 +365,10 @@ go.onclick=()=>{blocks.forEach(b=>b.classList.remove('err'));const miss=blocks.f
  const profile={budget:bud,fuel:topFuel,fuelRunnerUp:fuel[1]?.[0]||'',gearbox:gb,body,confidence:conf,warnings:warn};
  saveSub({name:cname.value.trim(),contact:cemail.value.trim()+(cphone.value.trim()?' · '+cphone.value.trim():''),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwbeSbmeVe4pEoT01xV4fj435eS374Kl50cVfHLhxUF1OvALlA1PObi4CluVvIuklho/exec';
-async function saveSub(doc){saved.textContent='Submitting your answers…';
+async function saveSub(doc){saved.textContent='Submitting your answers…';go.disabled=true;go.textContent='Submitting…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(doc)});
   saved.textContent=`✓ Submitted. We'll email your personalised car report to ${cemail.value.trim()} shortly.`;showThanks()}
- catch(e){saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
+ catch(e){go.disabled=false;go.textContent='Get my recommendation';saved.textContent="Your recommendation is shown above, but your answers couldn't be submitted. Please check your connection and try again."}}
 
 // ---- thank-you page + feedback ----
 const PRODUCT='car';
