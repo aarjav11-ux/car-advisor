@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Car Buyer Questionnaire</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6fa;--fg:#14213d;--muted:#5b6475;--line:#d6dbe4;--card:#ffffff;--acc:#2563eb;--acc-soft:#e8efff;--ok:#16794c;--warn:#b45309;--bad:#c2410c}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141c;--fg:#e8ecf2;--muted:#9aa4b5;--line:#2c3544;--card:#171e29;--acc:#6ea0ff;--acc-soft:#1c2a45;--ok:#4ade80;--warn:#fbbf24;--bad:#fb923c}}
-:root[data-theme="dark"]{--bg:#0f141c;--fg:#e8ecf2;--muted:#9aa4b5;--line:#2c3544;--card:#171e29;--acc:#6ea0ff;--acc-soft:#1c2a45;--ok:#4ade80;--warn:#fbbf24;--bad:#fb923c}
+:root{--bg:#fbfaf7;--fg:#14213d;--muted:#5b6475;--line:#e3e7ee;--card:#ffffff;--acc:#c2611f;--acc-soft:#fff4ec;--ok:#2f7d5b;--warn:#b45309;--bad:#c2410c;--navy:#14213d;color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
 main{max-width:720px;margin:0 auto;padding:0 16px 120px}
@@ -34,7 +32,6 @@ main{max-width:720px;margin:0 auto;padding:0 16px 120px}
 .req:after{content:" *";color:var(--bad)}
 .w{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:8px;vertical-align:2px;background:var(--bg);color:var(--muted);white-space:nowrap}
 .w5{background:#fdecec;color:#b42318}.w4{background:#fff4e5;color:#b45309}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .w5{background:#3a1c1c;color:#fca5a5}:root:not([data-theme="light"]) .w4{background:#3a2a12;color:#fcd34d}}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.row .q{margin-bottom:14px}
 @media(max-width:560px){.row{grid-template-columns:1fr;gap:0}.hero h1{font-size:25px}}
 input[type=number],input[type=text],input[type=email]{width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);outline:none;transition:border-color .15s}
@@ -72,8 +69,18 @@ button:disabled{opacity:.4;cursor:default}
 .sample-tx{flex:1;display:flex;flex-direction:column;gap:2px}.sample-tx span{font-size:13px;color:var(--muted);line-height:1.45}
 .sample-go{flex:none;font-weight:600;color:var(--acc);font-size:14px}
 @media(max-width:560px){.sample-go{display:none}}
-</style></head><body><main>
+h1,h2,.step-head h2{font-family:'Space Grotesk',Inter,sans-serif}
+.topnav{background:var(--navy);color:#f7f5f0}
+.topnav .in{max-width:720px;margin:0 auto;padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.topnav a{color:inherit;text-decoration:none}
+.topnav .logo{font-family:'Space Grotesk',Inter,sans-serif;font-weight:700;font-size:19px;display:flex;align-items:center;gap:10px}
+.topnav .logo i{width:28px;height:28px;border-radius:8px;background:var(--acc);display:grid;place-items:center;font-style:normal;font-size:15px}
+.topnav .home{font-size:14px;opacity:.85}.topnav .home:hover{opacity:1}
+.hero .eb{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
+</style></head><body><div class="topnav"><div class="in"><a class="logo" href="https://aarjav11-ux.github.io/"><i>🚗</i>Car Advisor</a><a class="home" href="https://aarjav11-ux.github.io/">← Back to website</a></div></div><main>
 <header class="hero">
+<span class="eb">Booking se pehle ek baar</span>
 <h1>Find the right car for you</h1>
 <p>Answer a few questions about your budget, driving and family. We’ll email you a personalised report with three recommended cars.</p>
 <div class="facts"><span>⏱ About 10–12 minutes</span><span>14 short steps</span><span>Progress saves automatically</span></div>
