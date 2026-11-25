@@ -164,8 +164,8 @@ function answered(b){const els=f.querySelectorAll(`[name="${b.dataset.n}"]`);ret
 function prog(){const a=blocks.filter(answered).length;pc.textContent=`${a} of ${N} answered`;pb.style.width=a/N*100+'%'}
 f.addEventListener('input',prog);
 // keep yearly/monthly km in sync
-f.mkm.addEventListener('input',()=>{if(f.mkm.value)f.ykm.value=f.mkm.value*12;prog()});
-f.ykm.addEventListener('input',()=>{if(f.ykm.value)f.mkm.value=Math.round(f.ykm.value/12)});
+if(f.mkm&&f.ykm)f.mkm.addEventListener('input',()=>{if(f.mkm.value)f.ykm.value=f.mkm.value*12;prog()});
+if(f.ykm)f.ykm.addEventListener('input',()=>{if(f.ykm.value)f.mkm.value=Math.round(f.ykm.value/12)});
 try{const s=JSON.parse(localStorage.getItem('carq')||'{}');for(const[k,v]of Object.entries(s))[].concat(v).forEach(x=>{f.querySelectorAll(`[name="${k}"]`).forEach(e=>{if(e.type=='radio'||e.type=='checkbox'){if(e.value==x)e.checked=true}else e.value=x})});prog()}catch(e){}
 // ---- step-by-step navigation ----
 const steps=[document.getElementById('s-contact'),...f.querySelectorAll('.step')];let cur=0;
