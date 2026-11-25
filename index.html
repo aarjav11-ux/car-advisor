@@ -157,7 +157,7 @@ S.forEach(([title,qs],si)=>{html+=`<section class="step" data-title="${title}"><
   else if(ty=='r')b='<div class="opts">'+o.split('|').map(x=>`<label class="opt"><input type="radio" name="${nm}" value="${x}"><span class="dot"></span><span>${x}</span></label>`).join('')+'</div>';
   else b='<div class="chips">'+o.split('|').map(x=>`<label><input type="checkbox" name="${nm}" value="${x}"><span>${x}</span></label>`).join('')+'</div>';
   const blk=`<div class="q" data-n="${nm}" data-req="${req}" data-w="${wt}"><label class="t ${rq}" for="${id}"><span class="n">${N}.</span>${t}<span class="w w${wt}" title="Importance weight ${wt} of 5">${WL[wt]}</span></label><p class="err-msg">Please answer this question.</p>${b}</div>`;
-  if(ty=='n'&&(key=='mkm'||key=='ykm')){pair.push(blk);if(pair.length==2){html+=`<div class="row">${pair.join('')}</div>`;pair=[]}}else html+=blk;});html+='</section>';});
+  html+=blk;});html+='</section>';});
 f.innerHTML=html;
 const blocks=[...f.querySelectorAll('.q')];
 function answered(b){const els=f.querySelectorAll(`[name="${b.dataset.n}"]`);return [...els].some(e=>(e.type=='radio'||e.type=='checkbox')?e.checked:e.value.trim()!=='')}
