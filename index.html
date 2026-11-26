@@ -96,7 +96,7 @@ button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
 #thanks .fb-btn{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:600;font-size:15px;cursor:pointer}
 #thanks .fb-err{color:var(--bad);font-size:14px;display:none}
 #thanks .fb-done{display:none;text-align:center;padding:10px 0}
-</style></head><body><div class="topnav"><div class="in"><a class="logo" href="https://aarjav11-ux.github.io/cars/"><i>🚗</i>RightWheel</a><a class="home" href="https://aarjav11-ux.github.io/cars/">← Back to RightWheel</a></div></div><main>
+</style><style id="dbk-css">.dbk{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:14px;color:var(--muted);cursor:pointer;user-select:none}.dbk input{width:17px;height:17px;accent-color:#b42318;margin:0}.q[data-db="1"]{border-color:#f1b8b8;box-shadow:0 0 0 1px #f1b8b8}.q[data-db="1"] .dbk{color:#b42318;font-weight:600}</style></head><body><div class="topnav"><div class="in"><a class="logo" href="https://aarjav11-ux.github.io/cars/"><i>🚗</i>RightWheel</a><a class="home" href="https://aarjav11-ux.github.io/cars/">← Back to RightWheel</a></div></div><main>
 <header class="hero">
 <span class="eb">Booking se pehle ek baar</span>
 <h1>Find the right car for you</h1>
@@ -249,7 +249,7 @@ go.onclick=()=>{if(go.disabled)return;blocks.forEach(b=>b.classList.remove('err'
  ${warn.length?`<h4>Things to watch</h4><ul>${warn.map(w=>`<li>${w}</li>`).join('')}</ul>`:''}`;
  out.scrollIntoView({behavior:'smooth'});
  // Save the submission: every question with its weight and answer, plus the computed profile
- const answers=blocks.map((b,i)=>{const v=[].concat(d[b.dataset.n]??[]);return{n:i+1,q:b.querySelector('label.t').firstChild.nextSibling.textContent,w:+b.dataset.w,a:v.join(', ')}}).filter(r=>r.a);
+ const answers=blocks.map((b,i)=>{const v=[].concat(d[b.dataset.n]??[]);return{n:i+1,q:b.querySelector('label.t').firstChild.nextSibling.textContent,w:b.dataset.db?5:+b.dataset.w,db:b.dataset.db?1:0,a:v.join(', ')}}).filter(r=>r.a);
  const profile={budget:bud,fuel:topFuel,fuelRunnerUp:fuel[1]?.[0]||'',gearbox:gb,body,confidence:conf,warnings:warn};
  if(cprof.value.trim())answers.unshift({n:'P',q:'Profession',w:3,a:cprof.value.trim()});if(cgender.value)answers.unshift({n:'G',q:'Gender',w:3,a:cgender.value});saveSub({name:cname.value.trim(),contact:cemail.value.trim()+(cphone.value.trim()?' · '+cphone.value.trim():''),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwbeSbmeVe4pEoT01xV4fj435eS374Kl50cVfHLhxUF1OvALlA1PObi4CluVvIuklho/exec';
@@ -278,4 +278,11 @@ document.getElementById('fb-go').onclick=async()=>{if(!fbStar){document.getEleme
  const b=document.getElementById('fb-go');b.disabled=true;b.textContent='Sending…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:'FEEDBACK · '+cname.value.trim(),contact:cemail.value.trim(),profile:{budget:'',fuel:'Rating '+fbStar+'/5',gearbox:'Ease: '+g('ease'),body:'Length: '+g('length'),confidence:'',warnings:[]},answers})})}catch(e){}
  document.getElementById('fb').style.display='none';document.getElementById('fb-done').style.display='block'};
-</script><p style="text-align:center;color:#6b7280;font-size:12.5px;margin:30px 0 90px">RightWheel by PickWise · Registered address: D204 Adarsh Lakefront, Bellandur, Bengaluru, Karnataka 560103</p></body></html>
+</script><p style="text-align:center;color:#6b7280;font-size:12.5px;margin:30px 0 90px">RightWheel by PickWise · Registered address: D204 Adarsh Lakefront, Bellandur, Bengaluru, Karnataka 560103</p><script>(function(){
+var K='dbk:'+location.pathname,S={};try{S=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function go(){[].forEach.call(document.querySelectorAll('.q[data-n]'),function(b){if(b.querySelector('.dbk'))return;var n=b.dataset.n;
+var l=document.createElement('label');l.className='dbk';l.innerHTML='<input type="checkbox"> Deal breaker for me';var c=l.firstChild;
+if(S[n]){c.checked=true;b.dataset.db='1'}
+c.onchange=function(){if(c.checked){b.dataset.db='1';S[n]=1}else{delete b.dataset.db;delete S[n]}save()};b.appendChild(l)})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();})();</script></body></html>
