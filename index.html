@@ -111,7 +111,7 @@ button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
 <div class="step-head"><div class="k">Before we start</div><h2>Where should we send your report?</h2><p>We only use these details to send your report.</p></div>
 <div class="q" id="qc-name"><label class="t req" for="cname">Your name</label><p class="err-msg">Please enter your name.</p><input type="text" id="cname" autocomplete="name" placeholder="e.g. Priya Sharma"></div>
 <div class="q" id="qc-email"><label class="t req" for="cemail">Email</label><p class="err-msg">Please enter a valid email address.</p><input type="email" id="cemail" autocomplete="email" placeholder="you@example.com"></div>
-<div class="q"><label class="t" for="cphone">Phone <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="tel" id="cphone" autocomplete="tel" placeholder="e.g. 98xxxxxx10" style="width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)"></div>
+<div class="q"><label class="t" for="cphone">Phone <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="tel" id="cphone" autocomplete="tel" placeholder="e.g. 98xxxxxx10" style="width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)"></div><div class="q"><label class="t" for="cgender">Gender <span style="color:var(--muted);font-weight:400">(optional)</span></label><select id="cgender" style="width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)"><option value="">Select</option><option>Male</option><option>Female</option><option>Prefer not to say</option></select></div><div class="q"><label class="t" for="cprof">Profession <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="text" id="cprof" autocomplete="organization-title" placeholder="e.g. Software engineer, doctor, business owner" style="width:100%;padding:13px 14px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)"></div>
 </section>
 <form id="f"></form>
 <p id="saved"></p>
@@ -188,9 +188,9 @@ document.addEventListener('input',e=>{const q=e.target.closest('.q');if(q&&q.cla
  [...dots.children].forEach((d,j)=>{if(j!=cur)d.className=stepDone(j)?'done':''})});
 // auto-advance focus: after picking a radio, gently scroll to the next question
 f.addEventListener('change',e=>{if(e.target.type!='radio')return;const q=e.target.closest('.q');const nx=q&&q.nextElementSibling;if(nx&&nx.classList.contains('q')&&!answered(nx))setTimeout(()=>nx.scrollIntoView({behavior:'smooth',block:'center'}),150)});
-try{const c=JSON.parse(localStorage.getItem('carq-contact')||'{}');if(c.n)cname.value=c.n;if(c.e)cemail.value=c.e;if(c.p)cphone.value=c.p}catch(e){}
-const s_contact_save=()=>{try{localStorage.setItem('carq-contact',JSON.stringify({n:cname.value,e:cemail.value,p:cphone.value}))}catch(e){}};
-[cname,cemail,cphone].forEach(el=>el.addEventListener('input',s_contact_save));
+try{const c=JSON.parse(localStorage.getItem('carq-contact')||'{}');if(c.n)cname.value=c.n;if(c.e)cemail.value=c.e;if(c.p)cphone.value=c.p;if(c.g)cgender.value=c.g;if(c.r)cprof.value=c.r}catch(e){}
+const s_contact_save=()=>{try{localStorage.setItem('carq-contact',JSON.stringify({n:cname.value,e:cemail.value,p:cphone.value,g:cgender.value,r:cprof.value}))}catch(e){}};
+[cname,cemail,cphone,cprof].forEach(el=>el.addEventListener('input',s_contact_save));cgender.addEventListener('change',s_contact_save);
 show(0);show.ready=true;
 function data(){const d={};new FormData(f).forEach((v,k)=>{if(v==='')return;d[k]=k in d?[].concat(d[k],v):v});return d}
 f.addEventListener('change',()=>{try{localStorage.setItem('carq',JSON.stringify(data()))}catch(e){}});
@@ -247,7 +247,7 @@ go.onclick=()=>{if(go.disabled)return;blocks.forEach(b=>b.classList.remove('err'
  // Save the submission: every question with its weight and answer, plus the computed profile
  const answers=blocks.map((b,i)=>{const v=[].concat(d[b.dataset.n]??[]);return{n:i+1,q:b.querySelector('label.t').firstChild.nextSibling.textContent,w:+b.dataset.w,a:v.join(', ')}}).filter(r=>r.a);
  const profile={budget:bud,fuel:topFuel,fuelRunnerUp:fuel[1]?.[0]||'',gearbox:gb,body,confidence:conf,warnings:warn};
- saveSub({name:cname.value.trim(),contact:cemail.value.trim()+(cphone.value.trim()?' · '+cphone.value.trim():''),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
+ if(cprof.value.trim())answers.unshift({n:'P',q:'Profession',w:3,a:cprof.value.trim()});if(cgender.value)answers.unshift({n:'G',q:'Gender',w:3,a:cgender.value});saveSub({name:cname.value.trim(),contact:cemail.value.trim()+(cphone.value.trim()?' · '+cphone.value.trim():''),submittedAt:new Date().toISOString(),status:'new',answers,profile});};
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwbeSbmeVe4pEoT01xV4fj435eS374Kl50cVfHLhxUF1OvALlA1PObi4CluVvIuklho/exec';
 async function saveSub(doc){saved.textContent='Submitting your answers…';go.disabled=true;go.textContent='Submitting…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(doc)});
