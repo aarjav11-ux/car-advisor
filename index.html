@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314213d'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%23f0a26a' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23f0a26a'/%3E%3C/svg%3E"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RightWheel · Car Buyer Questionnaire</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -106,7 +107,7 @@ button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
 <span class="sample-tx"><b>See a sample report</b><span>What you’ll receive: a ~40-page personalised report with your top 3 cars, a one-page summary, side-by-side comparison, monthly costs, test-drive checklist and why other cars were ruled out.</span></span>
 <span class="sample-go">View →</span></a>
 </header>
-<div class="bar"><div class="meta"><span id="stepname"><b>Step 1</b></span><span id="pc">0 of 100 answered</span></div><div class="track"><i id="pb"></i></div><div class="dots" id="dots"></div></div>
+<div class="bar"><div class="meta"><span id="stepname"><b>Step 1</b></span><span id="pc">0 of 36 answered</span></div><div class="track"><i id="pb"></i></div><div class="dots" id="dots"></div></div>
 <section class="step on" id="s-contact">
 <div class="step-head"><div class="k">Before we start</div><h2>Where should we send your report?</h2><p>We only use these details to send your report.</p></div>
 <div class="q" id="qc-name"><label class="t req" for="cname">Your name</label><p class="err-msg">Please enter your name.</p><input type="text" id="cname" autocomplete="name" placeholder="e.g. Priya Sharma"></div>
@@ -168,6 +169,7 @@ f.addEventListener('input',prog);
 if(f.mkm&&f.ykm)f.mkm.addEventListener('input',()=>{if(f.mkm.value)f.ykm.value=f.mkm.value*12;prog()});
 if(f.ykm)f.ykm.addEventListener('input',()=>{if(f.ykm.value)f.mkm.value=Math.round(f.ykm.value/12)});
 try{const s=JSON.parse(localStorage.getItem('carq')||'{}');for(const[k,v]of Object.entries(s))[].concat(v).forEach(x=>{f.querySelectorAll(`[name="${k}"]`).forEach(e=>{if(e.type=='radio'||e.type=='checkbox'){if(e.value==x)e.checked=true}else e.value=x})});prog()}catch(e){}
+try{const qb=new URLSearchParams(location.search).get('budget');if(qb&&f.budget&&!f.budget.value){f.budget.value=qb;prog()}}catch(e){}
 // ---- step-by-step navigation ----
 const steps=[document.getElementById('s-contact'),...f.querySelectorAll('.step')];let cur=0;
 const dots=document.getElementById('dots');
@@ -200,6 +202,7 @@ go.onclick=()=>{if(go.disabled)return;blocks.forEach(b=>b.classList.remove('err'
  if(!contactOk()){show(0);flag(0);return}
  if(miss.length){const si=steps.findIndex(st=>st.contains(miss[0]));show(si);setTimeout(()=>flag(si),300);hint.textContent=miss.length+' required question(s) still to answer';return}
  const d=data(),has=(k,v)=>[].concat(d[k]||[]).some(x=>x.startsWith(v)),ok=k=>{const a=[].concat(d.fuel||[]);return a.includes(k)||a.includes('No preference')};
+ if(!d.ncr&&/delhi|gurgaon|gurugram|noida|ghaziabad|faridabad|\bncr\b/i.test(d.city||''))d.ncr='Resident of Delhi-NCR';if(!d.crawl&&d.traffic)d.crawl=d.traffic;
  const ykm=+d.ykm||+d.mkm*12||0,bud=+d.budget||0,why=[],warn=[];
  // Fuel
  // Each answer's effect is scaled by its notebook weight (weight 3 = ×1, weight 5 = ×1.67)
@@ -219,7 +222,7 @@ go.onclick=()=>{if(go.disabled)return;blocks.forEach(b=>b.classList.remove('err'
  const topFuel=fuel.length?fuel[0][0]:'Petrol';
  why.push(`${ykm.toLocaleString('en-IN')} km a year, ${d.ratio||'—'}${has('charge','Yes')?', home charging available':''}.`);
  // Gearbox
- let gb='Manual';if(has('gear','Auto')||has('traffic','Yes')||has('crawl','Yes')){gb=has('amt','No')||has('cvt','Doesn')?'Automatic: torque converter or CVT (avoid AMT jerks and dry-clutch DCTs in crawling traffic)':'Automatic: AMT is fine for budget and gentle driving';if(topFuel=='Electric')gb='Automatic (single-speed EV)';if(has('sporty','Yes')&&!has('crawl','Yes'))gb='Automatic: DCT, for quick shifts on flowing roads'}
+ let gb='Manual';if(has('gear','Manual')&&has('traffic','Yes'))warn.push('You prefer a manual but drive in heavy traffic: test the clutch weight on your test drive.');if(!has('gear','Manual')&&(has('gear','Auto')||has('traffic','Yes')||has('crawl','Yes'))){gb=has('amt','No')||has('cvt','Doesn')?'Automatic: torque converter or CVT (avoid AMT jerks and dry-clutch DCTs in crawling traffic)':'Automatic: AMT is fine for budget and gentle driving';if(topFuel=='Electric')gb='Automatic (single-speed EV)';if(has('sporty','Yes')&&!has('crawl','Yes'))gb='Automatic: DCT, for quick shifts on flowing roads'}
  // Body
  const occ=d.occ||'',bodies=[].concat(d.body||[]);let body;
  if(occ=='6–7')body='MPV / 7-seater';else if(has('gc','200')||has('roads','Unpaved'))body='Mid-size SUV with 200 mm+ ground clearance';
