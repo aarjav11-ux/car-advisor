@@ -95,7 +95,7 @@ button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
 #thanks .fb-btn{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:600;font-size:15px;cursor:pointer}
 #thanks .fb-err{color:var(--bad);font-size:14px;display:none}
 #thanks .fb-done{display:none;text-align:center;padding:10px 0}
-</style></head><body><div class="topnav"><div class="in"><a class="logo" href="https://aarjav11-ux.github.io/"><i>🚗</i>RightWheel</a><a class="home" href="https://aarjav11-ux.github.io/">← Back to website</a></div></div><main>
+</style></head><body><div class="topnav"><div class="in"><a class="logo" href="https://aarjav11-ux.github.io/cars/"><i>🚗</i>RightWheel</a><a class="home" href="https://aarjav11-ux.github.io/cars/">← Back to RightWheel</a></div></div><main>
 <header class="hero">
 <span class="eb">Booking se pehle ek baar</span>
 <h1>Find the right car for you</h1>
@@ -136,6 +136,7 @@ button:not(.ghost){box-shadow:0 6px 18px rgba(194,97,31,.25)}
 <p class="fb-err" id="fb-err">Please pick a star rating first.</p>
 <button type="button" class="fb-btn" id="fb-go">Send feedback</button></div>
 <div class="card fb-done" id="fb-done"><h3 style="margin:0">🙏 Thanks for the feedback!</h3><p style="color:var(--muted);margin:6px 0 0">It goes straight to us and helps make this better.</p></div>
+<div style="text-align:center;margin:18px 0 6px"><a href="https://aarjav11-ux.github.io/cars/" style="display:inline-block;background:#c2611f;color:#fff;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 22px">← Back to RightWheel home</a></div>
 </section>
 
 </main>
@@ -274,4 +275,4 @@ document.getElementById('fb-go').onclick=async()=>{if(!fbStar){document.getEleme
  const b=document.getElementById('fb-go');b.disabled=true;b.textContent='Sending…';
  try{await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:'FEEDBACK · '+cname.value.trim(),contact:cemail.value.trim(),profile:{budget:'',fuel:'Rating '+fbStar+'/5',gearbox:'Ease: '+g('ease'),body:'Length: '+g('length'),confidence:'',warnings:[]},answers})})}catch(e){}
  document.getElementById('fb').style.display='none';document.getElementById('fb-done').style.display='block'};
-</script></body></html>
+</script><p style="text-align:center;color:#6b7280;font-size:12.5px;margin:30px 0 90px">RightWheel by DecideWell · Registered address: D204 Adarsh Lakefront, Bellandur, Bengaluru, Karnataka 560103</p></body></html>
